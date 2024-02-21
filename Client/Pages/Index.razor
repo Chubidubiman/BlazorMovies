@@ -1,66 +1,38 @@
 ﻿@page "/"
+@inject ServicesSingleton singleton
+@inject IRepositorie repositorie
 
+<PageTitle>Blazor Movies</PageTitle>
+<HeadContent>
+    <meta name="description" content="Page to show Movies." />
+</HeadContent>
+
+<p> Singleton Valor : @singleton.Val</p>
 <div>
     <h3>Movies</h3>
-    @if (Movies is null)
-    {
-        <img 
-            alt="loading"
-            src="https://i.gifer.com/ZKZg.gif"/>
-    }
-    else if (Movies.Count == 0)
-    {
-        <p> No movies to show.</p>
-    }
-    else
-    {
-        @foreach (var movie in Movies)
-        {
-            <div>
-                <p>Title: @((MarkupString)@movie.Title)
-                    @if  (DateTime.Today.Subtract(movie.LaunchDate).Days <= 14)
-                    {
-                        <span style="color: red"> (NEW RELEASE!)</span>
-                    }
-                </p>
-                <p>Launch Date: <b>@movie.LaunchDate.ToString("dd MMM yyyy")</b></p>
-            </div>
-        }
-    }
-    
+    <MovieList @ref="movieList" Movies="Movies" />
 </div>
 
+<button @onclick="AddMovie">Add Movies</button>
+<button @onclick="ClearMovies">Clear Movies</button>
+
 @code{
-    string name = "Luis";
-    Movie WakawakaPaSiempre { get { return GetMovie(); }}
-    List<Movie>? Movies { get; set;}
-    protected override async Task OnInitializedAsync()
+
+    public List<Movie>? Movies { get; set; }
+    public MovieList? movieList;
+    protected override void OnInitialized()
     {
-        await Task.Delay(1000);
-        Movies = GetMovies();
-        //Movies = new List<Movie>();
-    }
-    Movie GetMovie()
-    {
-        return new Movie
-        {
-            Title = "Wakawaka Pa Siempre",
-            LaunchDate = new DateTime(2020,11,11)
-        };
+        Movies = repositorie.GetMovies();
+        //movieList.Movies
     }
 
-    List<Movie> GetMovies()
+    private void AddMovie()
     {
-        return new List<Movie>()
-        {
-            new Movie{Title = "<b>Wakawaka Pa Siempre</b>", LaunchDate = new DateTime(2024, 1, 30)},
-            new Movie{Title = "<i>Monana</i>", LaunchDate = new DateTime(2016, 11, 23)},
-            new Movie{Title = "Paprika", LaunchDate = new DateTime(2010, 7, 16)}
-        };
+        Movies!.Add(new Movie{Title = "New Movie", LaunchDate = DateTime.Today});
     }
 
-    void ClickButtonManager()
+    private void ClearMovies()
     {
-        Console.WriteLine("Is Clicked in a function!");
+        movieList!.ClearMovies();
     }
 }

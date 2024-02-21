@@ -1,0 +1,29 @@
+<div>
+    <p>Title: <b>@Movie.Title</b>
+    @if  (DateTime.Today.Subtract(Movie.LaunchDate).Days <= 14)
+    {
+        <span style="color: red"> (NEW RELEASE!)</span>
+    }
+    </p>
+    <p>Launch Date: <b>@Movie.LaunchDate.ToString("dd MMM yyyy")</b></p>
+    @if (ShowButtons) 
+    {
+        <div>
+            <button @onclick="@(() => DeleteMovie.InvokeAsync(Movie))">Delete</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public Movie Movie {get; set;} = null!;
+    [Parameter]
+    public bool ShowButtons {get; set;} = false;
+    [Parameter]
+    public EventCallback<Movie> DeleteMovie { get; set;}
+    @*void Delete()
+    {
+        Console.WriteLine($"Delete movie {Movie.Title}");
+    }*@
+}

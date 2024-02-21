@@ -1,0 +1,49 @@
+@typeparam Titem
+
+@if (ListItems is null)
+{
+    @if (Loading is null)
+    {
+        <img alt="loading"
+            src="https://i.gifer.com/ZKZg.gif"/>
+    } 
+    else 
+    {
+        @Loading
+    }
+    @Loading
+}
+else if (ListItems.Count == 0)
+{
+    @if (NoRegistry is null)
+    {
+        <p>No Movies to show.</p>
+    }
+    else
+    {
+        @NoRegistry
+    }
+}
+else
+{
+    @foreach (var element in ListItems)
+    {
+        @Registry(element)
+    }
+}
+
+@code
+{
+    [Parameter]
+    public RenderFragment Loading { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment NoRegistry { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment<Titem> Registry { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public List<Titem> ListItems { get; set; } = null!;
+}
