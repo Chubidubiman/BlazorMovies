@@ -1,22 +1,15 @@
 ﻿@page "/"
-@inject ServicesSingleton singleton
+@page "/index"
 @inject IRepositorie repositorie
 
 <PageTitle>Blazor Movies</PageTitle>
-<HeadContent>
-    <meta name="description" content="Page to show Movies." />
-</HeadContent>
 
-<p> Singleton Valor : @singleton.Val</p>
 <div>
     <h3>Movies</h3>
-    <MovieList @ref="movieList" Movies="Movies" />
+    <MovieList Movies="Movies" />
 </div>
 
-<button @onclick="AddMovie">Add Movies</button>
-<button @onclick="ClearMovies">Clear Movies</button>
-
-@code{
+@code {
 
     public List<Movie>? Movies { get; set; }
     public MovieList? movieList;
@@ -24,15 +17,5 @@
     {
         Movies = repositorie.GetMovies();
         //movieList.Movies
-    }
-
-    private void AddMovie()
-    {
-        Movies!.Add(new Movie{Title = "New Movie", LaunchDate = DateTime.Today});
-    }
-
-    private void ClearMovies()
-    {
-        movieList!.ClearMovies();
     }
 }

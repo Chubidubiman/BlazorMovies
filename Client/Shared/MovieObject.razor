@@ -1,29 +1,39 @@
-<div>
-    <p>Title: <b>@Movie.Title</b>
-    @if  (DateTime.Today.Subtract(Movie.LaunchDate).Days <= 14)
-    {
-        <span style="color: red"> (NEW RELEASE!)</span>
-    }
+<div class="me-2 mb-2" style="text-align: center">
+    <a href="@urlMovie">
+        <img src="@Movie.Poster" 
+            alt="poster" 
+            style="width: 225px; height: 300px" />
+    </a>
+    <p style="max-widht: 225px; 
+        height: 44px; 
+        font-size: 15px; 
+        font-weight: bold">
+        <a href="@urlMovie" class="text-decoration-none">@Movie.Title</a>
     </p>
-    <p>Launch Date: <b>@Movie.LaunchDate.ToString("dd MMM yyyy")</b></p>
-    @if (ShowButtons) 
-    {
-        <div>
-            <button @onclick="@(() => DeleteMovie.InvokeAsync(Movie))">Delete</button>
-        </div>
-    }
+    <div>
+        <a class="btn btn-info">
+            Edit
+        </a>
+        <button type="button" 
+            class="btn btn-danger" 
+            @onclick="(() => DeleteMovie.InvokeAsync(Movie))">
+            Delete
+        </button>
+    </div>
 </div>
 
 @code {
     [Parameter]
     [EditorRequired]
-    public Movie Movie {get; set;} = null!;
+    public Movie Movie { get; set; } = null!;
     [Parameter]
-    public bool ShowButtons {get; set;} = false;
+    public bool ShowButtons { get; set; } = false;
     [Parameter]
-    public EventCallback<Movie> DeleteMovie { get; set;}
-    @*void Delete()
+    public EventCallback<Movie> DeleteMovie { get; set; }
+    private string urlMovie = string.Empty;
+
+    protected override void OnInitialized()
     {
-        Console.WriteLine($"Delete movie {Movie.Title}");
-    }*@
+        urlMovie = $"movie/";
+    }
 }

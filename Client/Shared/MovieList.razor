@@ -1,63 +1,25 @@
 @inject IJSRuntime js
-<input type="checkbox" @bind="ShowButtons"/> 
-<span>
-    Show Buttons
-</span>
-<GenericList ListItems="Movies">
-    <Registry Context="movie">
-        <MovieObject Movie="movie" 
-        DeleteMovie="DeleteMovie"
-        ShowButtons="ShowButtons"/>
-    </Registry>
-</GenericList>
+
+<div style="display: flex; flex-wrap:wrap; align-items: center;">
+    <GenericList ListItems="Movies">
+        <Registry Context="movie">
+            <MovieObject Movie="movie" />
+        </Registry>
+    </GenericList>
+</div>
 
 @code {
     [Parameter]
     [EditorRequired]
     public List<Movie>? Movies { get; set; }
-
-    public void ClearMovies() 
-    {
-        if ( Movies is not null )
-        {
-            Movies.Clear();
-        }
-    }
-    protected override void OnInitialized()
-    {
-        Console.WriteLine($"OnInitialized - Movies Quantity {Movies!.Count}");
-    }
-    protected override void OnParametersSet()
-    {
-        Console.WriteLine($"OnParametersSet - Movies Quantity {Movies!.Count}");
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Console.WriteLine("OnAfterRender: First Time: " + firstRender);
-    }
-
-    protected override bool ShouldRender()
-    {
-        Console.WriteLine("ShouldRender");
-        return true;
-    }
-
-        [Parameter]
-    public RenderFragment Loading { get; set; } = null!;
-
-    [Parameter]
-    public RenderFragment NoRegistry { get; set; } = null!;
-
-    bool ShowButtons = true;
-
     private async Task DeleteMovie(Movie movie)
     {
-        var confirm = await js.Confirm($"Do you want to delete the movie {movie.Title}?");
+        var confirm =
+        await js.Confirm($"Do you want to delete the movie {movie.Title}?");
         if (confirm)
         {
             Console.WriteLine($"Delete the movie {movie.Title}");
             Movies!.Remove(movie);
         }
     }
-}    
+}
