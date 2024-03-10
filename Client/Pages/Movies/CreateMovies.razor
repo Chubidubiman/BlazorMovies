@@ -3,12 +3,28 @@
 
 <h3>Create Movies</h3>
 
-<button @onclick="Create"> Save Movie</button>
+<MovieForm Movie="Movie" 
+    OnValidSubmit="Create" 
+    NoSelectedGender="GendersNoSelected">
+
+</MovieForm>
 
 @code {
+    private Movie Movie = new Movie();
+    private List<Gender> GendersNoSelected = new List<Gender>();
+
+    protected override void OnInitialized()
+    {
+        GendersNoSelected = new List<Gender>()
+        {
+            new Gender(){ Id=1, Name="Comedy" },
+            new Gender(){ Id=2, Name="Drama" },
+            new Gender(){ Id=3, Name="Action" },
+            new Gender(){ Id=4, Name="Sci-fi" }
+        };
+    }
     void Create()
     {
-        Console.WriteLine(navigationManager.BaseUri);
-        navigationManager.NavigateTo("movie");
+        navigationManager.NavigateTo("movies/create");
     }
 }

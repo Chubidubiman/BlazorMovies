@@ -1,0 +1,107 @@
+@page "/movies/find"
+@inject IRepositorie repositorie
+
+<h3> Movie Filter</h3>
+
+<div class="row g-3 align-items-center mb-3">
+    <div class="col-sm-3">
+        <input type="text" 
+            class="form-control" 
+            id="title" 
+            placeholder="Movie Title" 
+            @bind-value="title"
+            @bind-value:event="oninput" 
+            @onkeypress="@((KeyboardEventArgs e) => TitleKeyPress(e))" />
+    </div>
+    <div class="col-sm-3">
+        <select class="form-select" @bind="genderSelected">
+            <option value="0">-- Select a Gender --</option>
+            @foreach (var item in genders)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-sm-6" style="display: flex;">
+        <div class="form-check me-2">
+            <input type="checkbox" 
+                class="form-check-input" 
+                id="premieres" 
+                @bind="futureReleases" />
+            <label class="form-check-label" for="premieres">
+                Future Releases
+            </label>
+        </div>
+        <div class="form-check me-2">
+            <input type="checkbox" 
+                class="form-check-input" 
+                id="billboards" 
+                @bind="inBillboards" />
+            <label class="form-check-label" for="billboards">
+                Movies in Theaters
+            </label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" 
+                class="form-check-input" 
+                id="mostVoted" 
+                @bind="mostVoted" />
+            <label class="form-check-label" for="mostVoted">
+                Most Voted
+            </label>
+        </div>
+    </div>
+    <div class="col-12">
+        <button type="button" 
+            class="btn btn-primary"
+            @onclick="LoadNewMovies">
+            Find
+        </button>
+        <button type="button" 
+            class="btn btn-danger"
+            @onclick="Clear">
+            Clear
+        </button>
+    </div>
+</div>
+
+<MovieList Movies="Movies"></MovieList>
+
+@code {
+    private string title = string.Empty;
+    private string genderSelected = "0";
+    private List<Gender> genders = new List<Gender>();
+    private bool futureReleases = false;
+    private bool inBillboards = false;
+    private bool mostVoted = false;
+    private List<Movie>? Movies;
+
+    protected override void OnInitialized()
+    {
+        Movies = repositorie.GetMovies();
+    }
+    private void TitleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            LoadNewMovies();
+        }
+    }
+
+    private void LoadNewMovies()
+    {
+        Movies = repositorie.GetMovies()
+        .Where(x => x.Title.ToLower()
+        .Contains(title.ToLower())).ToList();
+    }
+    private void Clear()
+    {
+        Movies = repositorie.GetMovies();
+        title = string.Empty;
+        genderSelected = "0";
+        futureReleases = false;
+        inBillboards = false;
+        mostVoted = false;
+
+    }
+}

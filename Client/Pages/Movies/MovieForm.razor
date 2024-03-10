@@ -1,0 +1,133 @@
+<EditForm Model="Movie" OnInvalidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label>Title</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Movie.Title" />
+            <ValidationMessage For="@(() => Movie.Title)"/>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label>In Theater</label>
+        <div>
+            <InputCheckbox @bind-Value="@Movie.InTheater" />
+            <ValidationMessage For="@(() => Movie.InTheater)"/>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label>Launch Date</label>
+        <div>
+            <InputDate class="form-control"  @bind-Value="@Movie.LaunchDate" />
+            <ValidationMessage For="@(() => Movie.LaunchDate)"/>
+        </div>
+    </div>
+    <div class="mb-3">
+        <InputImage Label="Poster" SelectedImage="SelectedImage" 
+            ImageUrl="@ImageUrl" />
+    </div>
+    <div class="mb-3 form-markdown">
+        <InputMarkdown @bind-Value="@Movie.Resume"
+            For=@(() => Movie.Resume)
+            Label="Resume" />
+    </div>
+    <div class="mb-3">
+        <label>Genders</label>
+        <div>
+            <SelectorMultiple NoSelected="NoSelected" Selected="Selected">
+
+            </SelectorMultiple>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label>Actors</label>
+        <div>
+            <SelectorMultipleTypehead Context="Actor" 
+                SearchMethod="FindActors"
+                ItemsSelected="SelectedActors">
+                <MyListTemplate>
+                    @Actor.Name
+                </MyListTemplate>
+                <MyResultTemplate>
+                    <img style="width: 50px" src="@Actor.Photo" />
+                    @Actor.Name
+                </MyResultTemplate>
+            </SelectorMultipleTypehead>
+        </div>
+    </div>
+
+    <button class="btn btn-success">Save Changes</button>
+</EditForm>
+
+
+@code
+{
+    string? ImageUrl;
+
+    [Parameter]
+    [EditorRequired]
+    public Movie Movie { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    public List<Gender> SelectedGender{ get; set; } = new List<Gender>();
+
+    [Parameter]
+    [EditorRequired]
+    public List<Gender> NoSelectedGender{ get; set; } = new List<Gender>();
+
+    [Parameter]
+    public List<Actor> SelectedActors { get; set; } = new List<Actor>();
+
+    private List<SelectorMultipleModel> Selected { get; set; }
+        = new List<SelectorMultipleModel>();
+    
+    private List<SelectorMultipleModel> NoSelected { get; set; }
+        = new List<SelectorMultipleModel>();
+
+    protected override void OnInitialized()
+    {
+        //Movie.Poster = DateTime.Today;
+        if (!string.IsNullOrEmpty(Movie.Poster))
+        {
+            ImageUrl = Movie.Poster;
+            Movie.Poster = null;
+        }
+
+        Selected = SelectedGender
+            .Select(x => new SelectorMultipleModel(x.Id.ToString(), x.Name))
+            .ToList<SelectorMultipleModel>();
+        
+        NoSelected = NoSelectedGender
+            .Select(x => new SelectorMultipleModel(x.Id.ToString(), x.Name))
+            .ToList<SelectorMultipleModel>();
+
+    }
+
+    private void SelectedImage(string imageBase64)
+    {
+        Movie.Poster = imageBase64;
+        ImageUrl = null;
+    }
+
+    private async Task<IEnumerable<Actor>> FindActors(string searchText)
+    {
+        return new List<Actor>()
+        {
+            new Actor {
+                Id = 1, 
+                Name = "Tom Holland", 
+                Photo = "https://64.media.tumblr.com/d82b74cad547743096c6f9f30db6eb1d/cd1a60d9666b0f21-23/s640x960/0bf79acb68777a2c8acd78f734239e350d7ec7bf.jpg"
+            },
+            new Actor {
+                Id = 2, 
+                Name = "Tom Hanks", 
+                Photo = "https://i.imgflip.com/6quep.jpg?a474840"
+            }
+        };
+    }
+}

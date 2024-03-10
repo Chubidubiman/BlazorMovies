@@ -2,6 +2,12 @@
 
 <h3>Create Actors</h3>
 
-@code {
+<ActorForm OnValidSubmit="Create" Actor="Actor" />
 
+@code {
+    private Actor Actor = new Actor();
+    void Create()
+    {
+        Console.WriteLine("Create Actor");
+    }
 }

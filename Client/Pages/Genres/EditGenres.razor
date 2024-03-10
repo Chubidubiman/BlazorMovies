@@ -1,7 +1,28 @@
 @page "/Genres/edit/{GenreId:int}"
+@inject NavigationManager navigationManager
 
-<h3>Edit Genres</h3>
+<h3>Edit Genders</h3>
+
+<GenderForm @ref="genderForm" Gender="Gender" OnValidSubmit="Edit" />
 
 @code {
     [Parameter] public int GenreId { get; set; }
+    private Gender? Gender;
+    private GenderForm? genderForm;
+    protected override void OnInitialized()
+    {
+        Gender = new Gender()
+        {
+            Id = GenreId,
+            Name = "Comedy"
+        };
+    }
+    private void Edit()
+    {
+        genderForm!.FormPostedWithSuccess = true;
+        Console.WriteLine("Edit Gender of Movie");
+        Console.WriteLine($"Id: {Gender.Id}");
+        Console.WriteLine($"Name: {Gender.Name}");
+        navigationManager.NavigateTo("genres");
+    }
 }

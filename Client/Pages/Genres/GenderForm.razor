@@ -1,0 +1,61 @@
+
+@inject SweetAlertService swal
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation">
+</NavigationLock>
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group mb-3">
+        <label>Name:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Gender.Name" />
+            <ValidationMessage For="@(() => Gender.Name)" />
+        </div>
+    </div>
+    <button class="btn btn-success" type="submit">Save Changes</button>
+</EditForm>
+@code {
+    private EditContext editContext = null!;
+    protected override void OnInitialized()
+    {
+        editContext = new(Gender);
+    }
+
+    [EditorRequired]
+    [Parameter]
+    public Gender Gender { get; set; } = null!;
+
+    [EditorRequired]
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+    public bool FormPostedWithSuccess { get; set; } = false;
+    private async Task OnBeforeInternalNavigation(
+        LocationChangingContext context)
+    {
+        var formWasEdit = editContext.IsModified();
+        if(!formWasEdit)
+        {
+            return;
+        }
+
+        if(FormPostedWithSuccess)
+        {
+            return;
+        }
+
+        var result = await swal.FireAsync(new SweetAlertOptions{
+            Title = "Confirmation",
+            Text = "Do you want to leave this page?",
+            Icon = SweetAlertIcon.Warning,
+            ShowCancelButton = true
+        });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+
+        if(confirm)
+        {
+            return;
+        }
+        context.PreventNavigation();
+    }
+}

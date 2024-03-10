@@ -1,0 +1,54 @@
+<h3>Actor Form</h3>
+
+<EditForm Model="Actor" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label>Name:</label>
+        <div>
+            <InputText class="form-control" @bind-Value="@Actor.Name" />
+            <ValidationMessage For="@(() => Actor.Name)" />
+        </div>
+    </div>
+    <div class="mb-3">
+        <label>Birthday:</label>
+        <div>
+            <InputDate class="form-control" @bind-Value="@Actor.Birthday" />
+            <ValidationMessage For="@(() => Actor.Birthday)" />
+        </div>
+    </div>
+    <div class="mb-3">
+        <InputImage Label="Photo" SelectedImage="SelectedImage" 
+            ImageUrl="@ImageUrl" />
+    </div>
+    <div class="mb-3 form-markdown">
+        <InputMarkdown @bind-Value="@Actor.Biography"
+            For=@(() => Actor.Biography)
+            Label="Biography" />
+    </div>
+    <button class="btn btn-success">Save Changes</button>
+</EditForm>
+
+@code {
+    string? ImageUrl;
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Actor.Photo))
+        {
+            ImageUrl = Actor.Photo;
+            Actor.Photo = null;
+        }
+    }
+    private void SelectedImage(string imageBase64)
+    {
+        Actor.Photo = imageBase64;
+        ImageUrl = null;
+    }
+
+    [Parameter]
+    [EditorRequired]
+    public Actor Actor { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+}
